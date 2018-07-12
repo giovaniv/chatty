@@ -1,5 +1,5 @@
-// server.js
 
+// Server files
 const express = require('express');
 const ws = require('ws');
 
@@ -17,57 +17,30 @@ const wss = new ws.Server({ server });
 
 let contents = '';
 
+// Broadcast each message of the chat
 function broadcastMessage(message) {
-  const uuidv4 = require('uuid/v4');
-  // let newMessage = JSON.parse(message);
-  // newMessage.id = uuidv4();
-  // console.log(newMessage);
-  // console.log('im here, leo');
-  for (let client of wss.clients) {
-    if (client.readyState === ws.OPEN) {
-      let newMessage = JSON.stringify(message);
-      newMessage.id = uuidv4();
-      client.send(newMessage);
+  const uuidv4 = require('uuid/v4');            // create a UUID key for each message
+  for (let client of wss.clients) {             // for each client running
+    if (client.readyState === ws.OPEN) {        // we check if the state is already open
+      let newMessage = JSON.parse(message);     // we parse the message
+      newMessage.id = uuidv4();                 // save the UUID key that we created
+      client.send(JSON.stringify(newMessage));  // we send to each client the new message
     }
   }
-  // for (let client of wss.clients) {
-  //   if (client.readyState === ws.OPEN) {
-  //     let newMessage = JSON.parse(message);
-  //     newMessage.id = uuidv4();
-  //     //console.log(newMessage);
-  //     client.send(newMessage);
-  //   }
-  // }
 }
 
+// We retrieve the new message before broadcast it
 function handleMessage(message) {
-  // console.log('NEW MESSAGE!');
-  //console.log('handleMessage:',message);
   contents = message;
   broadcastMessage(contents);
 }
 
+// We handle the connection between client and server (handshake)
 function handleConnection(client) {
-  // // console.log(client);
-  // // console.log('New Connection!');
   client.on('message', handleMessage);
   client.send(contents);
-  // // Send this new person the current state of the document!
-  // // client.send(contents);
-
-  // console.log('new connection');
-  // client.on('message',handleMessage);
-  // client.send(contents);
 }
 
+// open and close connection
 wss.on('connection',handleConnection);
-
-// // Set up a callback that will run when a client connects to the server
-// // When a client connects they are assigned a socket, represented by
-// // the ws parameter in the callback.
-// wss.on('connection', (ws) => {
-//   console.log('Client connected');
-
-//   // Set up a callback for when a client closes the socket. This usually means they closed their browser.
-//   ws.on('close', () => console.log('Client disconnected'));
-// });
+wss.on('close', () => console.log('Client disconnected'));
