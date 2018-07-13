@@ -10,6 +10,7 @@ class App extends Component {
     this.clientConnection;
     this.state = {
       currentUser: { name: 'Bob' },
+      onlineUsers: 0,
       messages : [ ]
     }
     // we bind the functions
@@ -18,6 +19,8 @@ class App extends Component {
     this.handleBroadCast = this.handleBroadCast.bind(this);
     this.onBlurAtNewUser = this.onBlurAtNewUser.bind(this);
     this.handleNewUser = this.handleNewUser.bind(this);
+    this.handleOnConnection = this.handleOnConnection.bind(this);
+    //this.handleOnDisconnection = this.handleOnDisconnection.bind(this);
   }
 
   // when new users change usernames in chat
@@ -44,12 +47,20 @@ class App extends Component {
     this.setState({ currentUser: newUser });
   }
 
+  handleOnConnection(event) {
+    this.clientConnection.addEventListener('message',this.handleBroadCast);
+  }
+
   // when new client messages is comming
   handleBroadCast(evt) {
-    const messages = this.state.messages;
-    const newMessage = JSON.parse(evt.data);
-    messages.push(newMessage);
-    this.setState({ messages });
+    if ( typeof Number(1) === 'number' ) {
+      this.setState({ onlineUsers: evt.data });
+    } else {
+      const messages = this.state.messages;
+      const newMessage = JSON.parse(evt.data);
+      messages.push(newMessage);
+      this.setState({ messages });
+    }
   }
 
   // when current client send a new message
@@ -68,13 +79,15 @@ class App extends Component {
     // We try to open a Websocket connection
     const myHostName = 'ws://' + window.location.hostname + ':3001';
     this.clientConnection = new WebSocket(myHostName);
+    this.clientConnection.addEventListener('open',this.handleOnConnection);
+    // this.clientConnection.addEventListener('close',this.handleOnDisconnection);
   }
 
   render() {
     const myCurrentUser = this.state.currentUser.name;
     return (
       <div>
-        <NavBar />
+        <NavBar onlineUsers = { this.state.onlineUsers } />
         <MessageList messages = { this.state.messages } />
         <ChatBar currentUser = { myCurrentUser } onBlurAtNewUser = { this.onBlurAtNewUser } onNewUser = { this.onNewUser } onNewMessage = { this.onNewMessage } />
       </div>

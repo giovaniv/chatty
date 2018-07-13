@@ -38,9 +38,14 @@ function handleMessage(message) {
 // We handle the connection between client and server (handshake)
 function handleConnection(client) {
   client.on('message', handleMessage);
-  client.send(contents);
+  broadcastMessage(wss.clients.size);       // we broadcast the number of clients online
+  client.on('close', handleDisconnection);
+}
+
+function handleDisconnection(client) {
+  // onlineUsers--;
+  broadcastMessage(wss.clients.size);
 }
 
 // open and close connection
 wss.on('connection',handleConnection);
-wss.on('close', () => console.log('Client disconnected'));
