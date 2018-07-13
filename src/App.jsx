@@ -20,7 +20,6 @@ class App extends Component {
     this.onBlurAtNewUser = this.onBlurAtNewUser.bind(this);
     this.handleNewUser = this.handleNewUser.bind(this);
     this.handleOnConnection = this.handleOnConnection.bind(this);
-    //this.handleOnDisconnection = this.handleOnDisconnection.bind(this);
   }
 
   // when new users change usernames in chat
@@ -53,13 +52,14 @@ class App extends Component {
 
   // when new client messages is comming
   handleBroadCast(evt) {
-    if ( typeof Number(1) === 'number' ) {
+    const myType = JSON.parse(evt.data).type;
+    if (!myType) {
       this.setState({ onlineUsers: evt.data });
     } else {
       const messages = this.state.messages;
       const newMessage = JSON.parse(evt.data);
       messages.push(newMessage);
-      this.setState({ messages });
+      this.setState({ messages: messages });
     }
   }
 
@@ -80,7 +80,6 @@ class App extends Component {
     const myHostName = 'ws://' + window.location.hostname + ':3001';
     this.clientConnection = new WebSocket(myHostName);
     this.clientConnection.addEventListener('open',this.handleOnConnection);
-    // this.clientConnection.addEventListener('close',this.handleOnDisconnection);
   }
 
   render() {

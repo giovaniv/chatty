@@ -43,7 +43,6 @@ function handleConnection(client) {
 }
 
 function handleDisconnection(client) {
-  // onlineUsers--;
   broadcastMessage(wss.clients.size);
 }
 
