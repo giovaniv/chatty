@@ -64,11 +64,15 @@ class App extends Component {
   }
 
   // when current client send a new message
-  onNewMessage(messageType, message) {
+  onNewMessage(messageType, message, newUser) {
+    let myUser = this.state.currentUser.name;
+    if (newUser) {
+      myUser = newUser;
+    }
     const newMessage = {
       type : messageType,
       id : '',
-      username : this.state.currentUser.name,
+      username : myUser,
       content : message
     }
     this.clientConnection.send(JSON.stringify(newMessage));

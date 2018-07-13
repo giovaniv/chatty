@@ -3,11 +3,12 @@ import React, { Component } from 'react';
 export default class ChatBar extends Component {
 
   constructor(props) {
+
     super(props);
-    const { currentUser } = this.props;
+
     this.state = {
       type: '',
-      username: currentUser,
+      username: this.props.currentUser,
       content: ''
     }
     this.changedUser = false;   // to check if the user was changed
@@ -44,13 +45,17 @@ export default class ChatBar extends Component {
   // when the user hits enter in the message
   onMessageKeyPress(evt) {
     if (evt.key === 'Enter') {
+      let myUser;
       let newMessage = evt.target.value;
       let messageType = 'incomingMessage';
       this.changedUser = false;
+      if (this.state.username !== this.props.currentUser) {
+        myUser = this.state.username;
+      }
       if (!newMessage) {
         evt.target.value = '';
       } else {
-        this.props.onNewMessage(messageType, newMessage);
+        this.props.onNewMessage(messageType, newMessage, myUser);
         evt.target.value = '';
       }
     }
