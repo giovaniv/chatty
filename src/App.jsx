@@ -16,12 +16,32 @@ class App extends Component {
     this.onNewMessage = this.onNewMessage.bind(this);
     this.onNewUser = this.onNewUser.bind(this);
     this.handleBroadCast = this.handleBroadCast.bind(this);
+    this.onBlurAtNewUser = this.onBlurAtNewUser.bind(this);
+    this.handleNewUser = this.handleNewUser.bind(this);
+  }
+
+  // when new users change usernames in chat
+  handleNewUser(evt) {
+    const currentUser = { name: JSON.parse(evt.data).username };
+    this.setState({ currentUser: currentUser });
+  }
+
+  onBlurAtNewUser(prevUser, currentUser, messageType) {
+    const myMessage = `${prevUser} changed their name to ${currentUser}`;
+    const newMessage = {
+      type : messageType,
+      id : '',
+      username : currentUser,
+      content : myMessage
+    }
+    this.clientConnection.send(JSON.stringify(newMessage));
+    this.clientConnection.addEventListener('message',this.handleNewUser);
   }
 
   // when the user changed
   onNewUser(currentUser) {
-    const user = { name: currentUser };
-    this.setState({ currentUser: user });
+    const newUser = { name: currentUser };
+    this.setState({ currentUser: newUser });
   }
 
   // when new client messages is comming
@@ -33,8 +53,9 @@ class App extends Component {
   }
 
   // when current client send a new message
-  onNewMessage(message) {
+  onNewMessage(messageType, message) {
     const newMessage = {
+      type : messageType,
       id : '',
       username : this.state.currentUser.name,
       content : message
@@ -50,11 +71,12 @@ class App extends Component {
   }
 
   render() {
+    const myCurrentUser = this.state.currentUser.name;
     return (
       <div>
         <NavBar />
         <MessageList messages = { this.state.messages } />
-        <ChatBar currentUser = { this.state.currentUser.name } onNewUser = { this.onNewUser } onNewMessage = { this.onNewMessage } />
+        <ChatBar currentUser = { myCurrentUser } onBlurAtNewUser = { this.onBlurAtNewUser } onNewUser = { this.onNewUser } onNewMessage = { this.onNewMessage } />
       </div>
     );
   }

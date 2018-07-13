@@ -4,37 +4,55 @@ export default class ChatBar extends Component {
 
   constructor(props) {
     super(props);
+    const { currentUser } = this.props;
     this.state = {
-      username: this.props.currentUser,
+      type: '',
+      username: currentUser,
       content: ''
     }
+    this.changedUser = false;   // to check if the user was changed
+    
     // bind of each function
     this.onMessageKeyPress = this.onMessageKeyPress.bind(this);
-    this.onUserKeyPress = this.onUserKeyPress.bind(this);
+    this.onUserChange = this.onUserChange.bind(this);
+    this.onUserBlur = this.onUserBlur.bind(this);
   }
 
   // When the user change the username
-  onUserKeyPress(evt) {
+  onUserChange(evt) {
     let currentUser = evt.target.value;
     if (!currentUser) {
       currentUser = 'Anonymous';
     }
     this.props.onNewUser(currentUser);
+    this.changedUser = true;
+  }
+
+  // When the user change the focus of the user field
+  // and we know that he decided the new username
+  onUserBlur(evt) {
+    const prevUser = this.state.username;
+    const currentUser = evt.target.value;
+    if (prevUser !== currentUser) {
+      let messageType = 'postNotification';
+      this.changedUser = true;
+      this.setState({ username: currentUser });
+      this.props.onBlurAtNewUser(prevUser, currentUser, messageType);
+    }
   }
 
   // when the user hits enter in the message
   onMessageKeyPress(evt) {
     if (evt.key === 'Enter') {
-
       let newMessage = evt.target.value;
-
+      let messageType = 'incomingMessage';
+      this.changedUser = false;
       if (!newMessage) {
         evt.target.value = '';
       } else {
-        this.props.onNewMessage(newMessage);
+        this.props.onNewMessage(messageType, newMessage);
         evt.target.value = '';
       }
-
     }
   }
 
@@ -42,7 +60,7 @@ export default class ChatBar extends Component {
     const { currentUser } = this.props;
     return (
       <footer className="chatbar">
-        <input className="chatbar-username" name='myUser' placeholder="Your Name (Optional)" onChange = { this.onUserKeyPress } defaultValue={ currentUser } />
+        <input className="chatbar-username" name='myUser' placeholder="Your Name (Optional)" onChange = { this.onUserChange } onBlur = { this.onUserBlur } defaultValue={ currentUser } />
         <input className="chatbar-message" placeholder="Type a message and hit ENTER" onKeyPress = { this.onMessageKeyPress } />
       </footer>
     )
