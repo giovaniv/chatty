@@ -8,7 +8,7 @@ export default class ChatBar extends Component {
 
     this.state = {
       type: '',
-      username: this.props.currentUser,
+      username: this.props.currentUser.name,
       content: ''
     }
     this.changedUser = false;   // to check if the user was changed
@@ -46,16 +46,17 @@ export default class ChatBar extends Component {
   onMessageKeyPress(evt) {
     if (evt.key === 'Enter') {
       let myUser;
-      let newMessage = evt.target.value;
-      let messageType = 'incomingMessage';
+      const newMessage = evt.target.value;
+      const messageType = 'incomingMessage';
+      const myColor = this.props.currentUser.color;
       this.changedUser = false;
-      if (this.state.username !== this.props.currentUser) {
+      if (this.state.username !== this.props.currentUser.name) {
         myUser = this.state.username;
       }
       if (!newMessage) {
         evt.target.value = '';
       } else {
-        this.props.onNewMessage(messageType, newMessage, myUser);
+        this.props.onNewMessage(messageType, newMessage, myUser, myColor);
         evt.target.value = '';
       }
     }
@@ -65,7 +66,7 @@ export default class ChatBar extends Component {
     const { currentUser } = this.props;
     return (
       <footer className="chatbar">
-        <input className="chatbar-username" name='myUser' placeholder="Your Name (Optional)" onChange = { this.onUserChange } onBlur = { this.onUserBlur } defaultValue={ currentUser } />
+        <input className="chatbar-username" name='myUser' placeholder="Your Name (Optional)" onChange = { this.onUserChange } onBlur = { this.onUserBlur } defaultValue={ currentUser.name } />
         <input className="chatbar-message" placeholder="Type a message and hit ENTER" onKeyPress = { this.onMessageKeyPress } />
       </footer>
     )

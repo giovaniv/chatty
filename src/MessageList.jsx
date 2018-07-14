@@ -11,6 +11,7 @@ export default class MessageList extends Component {
           type = { message.type }
           username = { message.username }
           content = { message.content }
+          color = { message.color }
         />
       );
     });
