@@ -15,15 +15,18 @@ For example, if you copy a file called my_image.png into the build folder you ca
 ### Inserting Images in the Chatty
 
 You can send images in the chat room inserting your .gif, .png or .jpg URL between tags.
+
 For Example: `<http://cdn3-www.dogtime.com/assets/uploads/2011/03/puppy-development.jpg>`.
 
 ## Getting Started
 
 1. Fork this repository and after that `git clone` your new forked repository
-2. `npm install` to install all dependencies of the project
-3. `npm start` to run start chatty client
-4. In other terminal window go to `chatty_server` folder, run `node server.js` to start chatty server
-5. Go to `https://localhost:3000` to enter in the chatty web app
+2. In your `package.json` file change the `repository url` area to your new forked repository URL
+3. `npm install` to install all dependencies of the project
+4. `npm start` to run start chatty client
+5. In other terminal window go to `chatty_server` folder, run `node server.js` to start chatty server
+6. Go to `https://localhost:3000` to enter in the chatty web app
+7. Have fun!
 
 ### Linting
 
